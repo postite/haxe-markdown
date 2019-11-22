@@ -1,7 +1,5 @@
 package markdown;
 
-
-
 import markdown.AST;
 import Markdown;
 using StringTools;
@@ -80,8 +78,7 @@ class BlockSyntax
 		Leading (and trailing) `#` define atx-style headers.
 	**/
 	static var RE_HEADER = new EReg('^(#{1,6})(.*?)( +#* *)?$', '');
-    //a task
-   static var RE_TASK= new EReg('(\\[[x ]\\])','');
+
 	/**
 		The line starts with `>` with one optional space after.
 	**/
@@ -116,15 +113,8 @@ class BlockSyntax
 		after.
 	**/
 	static var RE_UL = new EReg('^[ ]{0,3}[*+-][ \\t]+(.*)$', '');
-
-   
+	
 	/**
-	 a tasklist
-	 */
-	//static var RE_TASKLIST= new EReg('^[ ]{0,3}[*+-].?( +\\[[^]\\] )+(.*)$','');
-	/**
-    * 
-    
 		A line starting with a number like `123.`. May have up to three leading
 		spaces before the marker and any number of spaces or tabs after.
 	**/
@@ -151,9 +141,6 @@ class BlockSyntax
 				new HorizontalRuleSyntax(),
 				new UnorderedListSyntax(),
 				new OrderedListSyntax(),
-            new TaskSyntax(),
-				
-
 				new TableSyntax(),
 				new ParagraphSyntax()
 			];
@@ -282,52 +269,6 @@ class HeaderSyntax extends BlockSyntax
 		return new ElementNode('h$level', contents);
 	}
 }
-
-
-/**
-	Parses task: `[x]`.
-**/
-class TaskSyntax extends BlockSyntax
-{
-	public function new() { super(); }
-
-	override function get_pattern():EReg
-	{
-		return BlockSyntax.RE_TASK;
-	}
-
-	override public function parse(parser:BlockParser)
-	{
-		//var childLines = [];
-      // Eat until we hit something that ends a paragraph.
-		// while (!BlockSyntax.isAtBlockEnd(parser))
-		// {
-		 var contents=StringTools.ltrim(parser.current);
-		//
-		var checktype="<input type='checkbox'/>";
-		if( get_pattern().match(contents)){		
-			
-			if( 
-				new EReg('(\\[[x]\\])',"g")
-				.match( get_pattern().matched(0).Log() ) 
-			)
-				checktype="<input type='checkbox' checked/>";
-				
-		
-		
-		contents=	get_pattern().matchedRight().Log();
-		}
-		parser.advance();
-		// }
-
-		//var contents = parser.document.parseInline(childLines.join('\n'));
-		//return ElementNode.empty('checkbox');
-		//var check= new ElementNode.empty('check');
-		return new TextNode('$checktype$contents');
-		//return new EmptyElement('checkbox', );
-	}
-}
-
 
 
 // Parses email-style blockquotes: `> quote`.
@@ -616,7 +557,7 @@ class ListSyntax extends BlockSyntax
 				// Add a blank line to the current list item.
 				childLines.push('');
 			}
-			else if (tryMatch(BlockSyntax.RE_UL) || tryMatch(BlockSyntax.RE_OL)  )
+			else if (tryMatch(BlockSyntax.RE_UL) || tryMatch(BlockSyntax.RE_OL))
 			{
 				// End the current list item and start a new one.
 				endItem();
@@ -720,8 +661,7 @@ class ListSyntax extends BlockSyntax
 				BlockSyntax.RE_HR,
 				BlockSyntax.RE_INDENT,
 				BlockSyntax.RE_UL,
-				BlockSyntax.RE_OL,
-				BlockSyntax.RE_TASK
+				BlockSyntax.RE_OL
 			];
 
 			if (!blockItem)
@@ -781,16 +721,6 @@ class UnorderedListSyntax extends ListSyntax
 		super('ul');
 	}
 }
-
-
-
-
-
-
-
-
-
-
 
 // Parses ordered lists.
 class OrderedListSyntax extends ListSyntax
