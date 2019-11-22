@@ -309,13 +309,13 @@ class TaskSyntax extends BlockSyntax
 			
 			if( 
 				new EReg('(\\[[x]\\])',"g")
-				.match( get_pattern().matched(0).Log() ) 
+				.match( get_pattern().matched(0) ) 
 			)
 				checktype="<input type='checkbox' checked/>";
 				
 		
 		
-		contents=	get_pattern().matchedRight().Log();
+		contents=	get_pattern().matchedRight();
 		}
 		parser.advance();
 		// }
